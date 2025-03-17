@@ -2,7 +2,7 @@
 
 Welcome to **VulnerableApp**, a purposefully insecure web application designed for security professionals and ethical hackers to practice real-world attacks.
 
-This app comes with a **Lab Guide (labguide.pdf)** that walks you through various vulnerabilities, including:
+This app comes with a **Lab Guide (Vulnerable App Lab Guide.pdf)** that walks you through various vulnerabilities, including:
 
 - 🔑 **Authentication Bypass**
 - 🛡 **Creating High-Privilege Accounts**
