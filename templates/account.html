@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #034254;
+            color: white;
+            padding: 5px 30px;
+            position: relative;
+        }
+
+        header img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .welcome {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #6EB528;  /* Changed color to #6EB528 */
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, .active {
+            background-color: #6EB528; /* Highlight active page link with #6EB528 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-section img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        h1 {
+            colour: white;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        input[type="file"], input[type="password"] {
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 30%;  /* Reduced width for both inputs */
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #6EB528;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5A9E22;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+/* Binary Effect Styling */
+        .binary-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            color: #00ff00; /* Matrix Green */
+            font-size: 30px; /* Bigger Font */
+            font-family: monospace;
+            overflow: hidden;
+            white-space: pre-wrap;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='NGS-logo.png') }}"" alt="Logo">
+        <div class="welcome">
+            <h1>Welcome, {{ username }}!</h1>
+        </div>
+        <nav>
+            <a href="search" class="{{ 'active' if request.path == '/search' else '' }}">Search</a>
+            <a href="chat" class="{{ 'active' if request.path == '/chat' else '' }}">Chat</a>
+           
+            <!-- Display admin link only if the user is an admin -->
+            {% if role == 'admin' %}
+                <a href="{{ url_for('admin') }}" class="{{ 'active' if request.path == '/admin' else '' }}">Admin Page</a>
+            {% endif %}
+
+
+            <a href="{{ url_for('account') }}" class="{{ 'active' if request.path == '/account' else '' }}">Profile</a>
+            <a href="{{ url_for('logout') }}" class="{{ 'active' if request.path == '/logout' else '' }}">Logout</a>
+
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="profile-section">
+
+            {% if profile_picture_url %}
+                <img src="{{ profile_picture_url }}" alt="Profile Picture" class="profile-img">
+            {% else %}
+                <img src="path/to/default-profile.jpg" alt="Default Profile Picture" class="profile-img">
+            {% endif %}
+            <div>
+                <h1>Welcome, {{ username }}!</h1>
+                <div id="quote"></div> 
+                <p>Role: {{ role }}</p>
+            </div>
+        </div>
+
+        <h2>Change Profile Picture</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="profile_picture">Upload a new profile picture:</label>
+            <input type="file" name="profile_picture" id="profile_picture" accept="image/*">
+            <button type="submit">Upload</button>
+        </form>
+
+        <h2>Change Password</h2>
+        <form method="POST" action="{{ url_for('change_password') }}">
+            <label for="new_password">New Password:</label>
+            <input type="password" name="new_password" id="new_password" required>
+            <button type="submit">Change Password</button>
+        </form>
+    </div>
+
+<script>
+    // Random motivational quotes
+    const quotes = [
+        "Hacking: the only job where breaking things is considered a skill.",
+        "There are two types of people: those who use strong passwords, and those who’ve been hacked.",
+        "If you’re not hacking, are you even living?",
+        "I didn’t hack it, I just ‘borrowed’ your data until you fix your security.",
+        "Why fix bugs when you can exploit them?",
+        "I’m just here to patch your vulnerability with a little social engineering.",
+        "Why break into a bank when you can break into a Wi-Fi?",
+        "The only thing more insecure than my password? My diet.",
+        "Hacker motto: If it's not broken, I’ll still try to exploit it.",
+        "To err is human. To exploit is divine.",
+        "I don’t need a social life, I have a well-curated list of exploit payloads.",
+        "404: Funny hacking quotes not found... but I’ll try again.",
+        "Hacking is like solving a puzzle... except it’s illegal and your computer explodes."
+    ];
+
+    function getRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        return quotes[randomIndex];
+    }
+
+    document.getElementById('quote').textContent = getRandomQuote();
+</script>
+
+<script>
+    const fileInput = document.getElementById('profile_picture');
+    const previewImage = document.querySelector('.profile-section img');
+
+    fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            previewImage.src = reader.result;  // Update the image source with the file preview
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = "path/to/default-profile.jpg";  // Default image if no file is selected
+        }
+    });
+</script>
+
+<script>
+    const now = new Date();
+    const hours = now.getHours();
+    let greeting = "Welcome";
+
+    if (hours < 12) {
+        greeting = "Good morning";
+    } else if (hours < 18) {
+        greeting = "Good afternoon";
+    } else {
+        greeting = "Good evening";
+    }
+
+    document.querySelector('.welcome h1').textContent = `${greeting}, {{ username }}!`;
+</script>
+ 
+    <div class="binary-container" id="binary-container"></div>
+
+<div id="leet-mode" style="display: none; text-align: center; position: absolute; width: 100%; top: 10%; font-size: 3rem; color: green;">
+    <img id="leet-image" src="static/cyberpug4.jpeg" alt="Hacker Image" style="width: 300px; display: block; margin-top: 10px;">
+</div>
+
+
+
+    <script>
+        // Konami Code Sequence
+        const konamiCode = [
+            "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+            "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
+            "b", "a"
+        ];
+        let konamiIndex = 0;
+
+        // Event Listener for Konami Code
+        document.addEventListener("keydown", function(event) {
+            if (event.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    activateBinaryMode();
+                    konamiIndex = 0; // Reset
+                }
+            } else {
+                konamiIndex = 0; // Reset if wrong key is pressed
+            }
+        });
+
+        function activateBinaryMode() {
+            // Hide all visible elements
+            document.querySelector("header").style.opacity = "0";
+            document.querySelector(".container").style.opacity = "0";
+
+            setTimeout(() => {
+                document.querySelector("header").style.display = "none";
+                document.querySelector(".container").style.display = "none";
+
+                const leetMode = document.getElementById("leet-mode");
+                leetMode.style.display = "block";
+
+
+                // Show Binary Effect
+                const binaryContainer = document.getElementById("binary-container");
+                binaryContainer.style.display = "block";
+                generateBinaryRain(binaryContainer);
+            }, 1000);
+        }
+
+        function generateBinaryRain(container) {
+            let binaryText = "";
+            const binaryStream = "0101011101000101010011000100001101001111010011010100010100101100001000000100110000110011001100110101010000100000010010000100000101000011010010110100010101010010001011100010000001011001010011110101010100100000010010000100000101010110010001010010000001010101010011100100110001001111010000110100101101000101010001000010000001010100010010000100010100100000010100110100010101000011010100100100010101010100001000000100100001000001010000110100101101000101010100100010000001001101010011110100010001000101001011100010111000101110"; // Example binary data
+            let index = 0;
+
+            function addCharacter() {
+        if (index < binaryStream.length) {
+            binaryText += binaryStream[index];
+            
+            // Add a line break every 48 characters
+            if (binaryText.length % 48 === 0) {
+                binaryText += "\n";
+            }
+
+            container.innerText = binaryText;
+            index++;
+            setTimeout(addCharacter, 50); // Typing effect
+        } else {
+            setTimeout(() => container.innerText = "", 10000); // Reset after completion
+            index = 0;
+            binaryText = "";
+            setTimeout(addCharacter, 4000); // Restart effect
+                }
+            }
+
+            addCharacter();
+        }
+    </script>
+
+
+</body>
+</html>

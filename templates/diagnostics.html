@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #034254;
+            color: white;
+            padding: 5px 30px;
+            position: relative;
+        }
+
+        header img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .welcome {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #6EB528;  /* Changed color to #6EB528 */
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, .active {
+            background-color: #6EB528; /* Highlight active page link with #6EB528 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-section img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        h1 {
+            colour: white;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        input[type="file"], input[type="password"] {
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 30%;  /* Reduced width for both inputs */
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+
+        <img src="{{ url_for('static', filename='NGS-logo.png') }}"" alt="Logo">
+
+         <div class="welcome">
+            <h1>Diagnostics</h1>
+        </div>
+
+        <nav>
+            <a href="search" class="{{ 'active' if request.path == '/search' else '' }}">Search</a>
+            <a href="chat" class="{{ 'active' if request.path == '/chat' else '' }}">Chat</a>
+           
+            <!-- Display admin link only if the user is an admin -->
+            {% if role == 'admin' %}
+                <a href="{{ url_for('admin') }}" class="{{ 'active' if request.path == '/admin' else '' }}">Admin Page</a>
+            {% endif %}
+
+
+            <a href="{{ url_for('account') }}" class="{{ 'active' if request.path == '/account' else '' }}">Profile</a>
+            <a href="{{ url_for('logout') }}" class="{{ 'active' if request.path == '/logout' else '' }}">Logout</a>
+
+        </nav>
+    </header>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Diagnostics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        iframe {
+            width: 100%;
+            height: 150px;
+
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<div class="container">
+<body>
+    <h2>System Diagnostics</h2>
+
+    <h3>System Information</h3>
+    <iframe id="sysinfo"></iframe>
+
+    <h3>Network Configuration</h3>
+    <iframe id="networkinfo"></iframe>
+
+    <script>
+
+        const systemFile = "/etc/os-release";
+        // Automatically fetch system info
+        document.getElementById("sysinfo").src = "/os_info?filename=testing.txt";
+        // Automatically fetch network info
+        document.getElementById("networkinfo").src = "/system_info?cmd=ip a";
+    </script>
+</div>
+</body>
+</html>

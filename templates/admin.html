@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #034254;
+            color: white;
+            padding: 5px 30px;
+            position: relative;
+        }
+
+        header img {
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .welcome {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #6EB528;  /* Changed color to #6EB528 */
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, .active {
+            background-color: #6EB528; /* Highlight active page link with #6EB528 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-section img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        h1 {
+            colour: white;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        input[type="file"], input[type="password"] {
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 30%;  /* Reduced width for both inputs */
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #6EB528;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5A9E22;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<head>
+    <title>Admin</title>
+</head>
+<body>
+<header>
+        <img src="{{ url_for('static', filename='NGS-logo.png') }}"" alt="Logo">
+        <div class="welcome">
+            <h1>Admin Panel</h1>
+        </div>
+        <nav>
+            <a href="search" class="{{ 'active' if request.path == '/search' else '' }}">Search</a>
+            <a href="chat" class="{{ 'active' if request.path == '/chat' else '' }}">Chat</a>
+            
+            <!-- Display admin link only if the user is an admin -->
+            {% if role == 'admin' %}
+                <a href="{{ url_for('admin') }}" class="{{ 'active' if request.path == '/admin' else '' }}">Admin Page</a>
+            {% endif %}
+
+
+            <a href="{{ url_for('account') }}" class="{{ 'active' if request.path == '/account' else '' }}">Profile</a>
+            <a href="{{ url_for('logout') }}" class="{{ 'active' if request.path == '/logout' else '' }}">Logout</a>
+
+        </nav>
+    </header>
+<body>
+    <div class="container">
+    <a href="{{ url_for('account') }}">Back to Account</a>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('reset_password', user_id=user.id) }}">
+                            <button type="submit">Reset Password</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}">
+                            <button type="submit">Delete User</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<!-- table - still being weird-->
+    <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('admin', page=page-1) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}
+            <a href="{{ url_for('admin', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
+
+
+<div>
+    <p><strong>Note:</strong> The company strategy is confidential and only to be shared with authorised individuals.</p>
+</div>
+
+
+
+<form id="downloadForm" method="GET">
+    <input type="number" id="fileId" name="fileId" value="1" min="1" hidden>
+    <button type="submit">Download File</button>
+</form>
+
+<script>
+    // Dynamically update the file URL based on the file ID input
+    document.getElementById("downloadForm").onsubmit = function(event) {
+        event.preventDefault(); // Prevent form from submitting the usual way
+        
+        const fileId = document.getElementById("fileId").value;  // Get file ID input
+        window.location.href = `/admin/download/${fileId}`;  // Redirect to the corresponding file URL
+    };
+</script>
+
+
+
+   
+<!--   <form action="/admin/download" method="get">
+  <input type="text" name="file" id="file" value="top-secret-company-strategy-2025.doc" hidden>
+        <button type="submit">Download Latest Report</button>
+    </form>
+
+-->
+
+
+
+
+    </form>
+</div>
+</body>
+</html>
